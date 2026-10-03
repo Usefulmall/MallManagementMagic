@@ -2,19 +2,13 @@ export const dynamic = 'force-dynamic'
 
 import { client } from '@/lib/sanity'
 import { PortableText } from '@portabletext/react'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
-
-const categoryLabels: Record<string, string> = {
-  operations: 'Operations', finance: 'Finance', leasing: 'Leasing',
-  marketing: 'Marketing', facilities: 'Facilities', people: 'People Management',
-  legal: 'Legal & Compliance', strategy: 'Strategy',
-}
+import { ArrowLeft } from 'lucide-react'
 
 async function getArticle(slug: string) {
   try {
     return await client.fetch(`
-      *[_type == "article" && slug.current == $slug][0] {
-        title, category, publishedAt, excerpt, body
+      *[_type == "article" && slug.current == $slug && status == "published"][0] {
+        title, author, publishedAt, summary, body, topics
       }
     `, { slug })
   } catch {
@@ -31,9 +25,10 @@ export default async function ArticlePage({
 
   if (!article) {
     return (
-      <div className="text-center py-24">
-        <h1 className="font-serif text-2xl font-bold text-gray-700">Article not found</h1>
-        <a href="/articles" className="text-[#1e4285] text-sm mt-4 inline-block hover:underline">
+      <div className="text-center py-24 space-y-4">
+        <h1 className="font-serif text-2xl font-bold text-gray-800">Article not found</h1>
+        <p className="text-gray-500 text-sm">The requested article is either unavailable or has not been published.</p>
+        <a href="/articles" className="text-[#0e2145] text-sm font-semibold inline-block hover:underline">
           ← Back to Articles
         </a>
       </div>
@@ -41,38 +36,40 @@ export default async function ArticlePage({
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
-      <a href="/articles" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#1e4285] transition-colors font-medium">
+    <div className="max-w-3xl mx-auto space-y-8 py-6">
+      <a href="/articles" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#0e2145] transition-colors font-medium">
         <ArrowLeft className="h-4 w-4" /> Back to Articles
       </a>
       <div className="space-y-4">
-        <span className="inline-block bg-blue-50 text-[#1e4285] text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full font-mono">
-          {categoryLabels[article.category] || article.category}
-        </span>
+        {article.topics && article.topics.length > 0 && (
+          <span className="inline-block bg-gray-100 text-gray-600 text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded">
+            {article.topics.join(' • ')}
+          </span>
+        )}
         <h1 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 leading-tight">{article.title}</h1>
-        <div className="flex items-center gap-3 text-xs text-gray-400 font-mono">
-          <span>{new Date(article.publishedAt).toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-          <span>·</span>
-          <span>Johan Olwage</span>
+        <div className="flex items-center gap-3 text-xs text-gray-500 font-mono border-b border-gray-100 pb-4">
+          <span>By {article.author || 'Johan Olwage'}</span>
+          {article.publishedAt && (
+            <>
+              <span>•</span>
+              <span>{new Date(article.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+            </>
+          )}
         </div>
       </div>
-      <hr className="border-gray-200" />
-      <div className="prose prose-gray prose-lg max-w-none prose-headings:font-serif prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-a:text-[#1e4285]">
+
+      {article.summary && (
+        <p className="text-lg text-gray-700 font-medium leading-relaxed italic bg-gray-50 p-4 rounded-lg border-l-4 border-[#0e2145]">
+          {article.summary}
+        </p>
+      )}
+
+      <div className="prose prose-gray prose-lg max-w-none prose-headings:font-serif prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed">
         {article.body ? (
           <PortableText value={article.body} />
         ) : (
-          <p className="text-gray-500 italic">Article content coming soon.</p>
+          <p className="text-gray-500 italic">Article body is empty.</p>
         )}
-      </div>
-      <hr className="border-gray-200" />
-      <div className="bg-[#0e2145] rounded-xl p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div>
-          <p className="font-serif font-bold text-lg">Looking for practical tools?</p>
-          <p className="text-white/70 text-sm">Download free templates and checklists.</p>
-        </div>
-        <a href="/resources" className="inline-flex items-center gap-2 bg-[#F0BE35] hover:bg-[#d9a82e] text-[#0e2145] font-bold rounded-lg px-5 py-2.5 text-sm transition-colors whitespace-nowrap">
-          Browse Free Resources <ArrowRight className="h-4 w-4" />
-        </a>
       </div>
     </div>
   )

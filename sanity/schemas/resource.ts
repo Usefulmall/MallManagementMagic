@@ -1,44 +1,46 @@
 export default {
   name: 'resource',
-  title: 'Resource',
+  title: 'Free Resource',
   type: 'document',
   fields: [
     {
       name: 'title',
       title: 'Title',
       type: 'string',
-      validation: (Rule: any) => Rule.required()
+      validation: (Rule: any) => Rule.required(),
     },
     {
       name: 'slug',
       title: 'Slug (URL)',
       type: 'slug',
       options: { source: 'title', maxLength: 96 },
-      validation: (Rule: any) => Rule.required()
+    },
+    {
+      name: 'resourceType',
+      title: 'Resource Type',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Guide', value: 'guide' },
+          { title: 'Checklist', value: 'checklist' },
+          { title: 'Template', value: 'template' },
+          { title: 'Practical Document', value: 'document' },
+        ],
+      },
+      validation: (Rule: any) => Rule.required(),
     },
     {
       name: 'description',
       title: 'Description',
       type: 'text',
       rows: 3,
-      validation: (Rule: any) => Rule.required()
+      validation: (Rule: any) => Rule.required(),
     },
     {
-      name: 'category',
-      title: 'Category',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Leasing & Tenants', value: 'leasing' },
-          { title: 'Finance & Budgeting', value: 'finance' },
-          { title: 'Operations & Maintenance', value: 'operations' },
-          { title: 'Marketing & Events', value: 'marketing' },
-          { title: 'Health, Safety & Compliance', value: 'safety' },
-          { title: 'People & HR', value: 'people' },
-          { title: 'Strategy & Reporting', value: 'strategy' },
-        ]
-      },
-      validation: (Rule: any) => Rule.required()
+      name: 'intendedUse',
+      title: 'Intended Use',
+      type: 'text',
+      rows: 2,
     },
     {
       name: 'fileType',
@@ -49,18 +51,46 @@ export default {
           { title: 'PDF', value: 'PDF' },
           { title: 'Word Document (DOCX)', value: 'DOCX' },
           { title: 'Excel Spreadsheet (XLSX)', value: 'XLSX' },
-        ]
+          { title: 'External Link / Destination', value: 'LINK' },
+        ],
       },
-      validation: (Rule: any) => Rule.required()
     },
     {
       name: 'file',
       title: 'Upload File',
       type: 'file',
-      description: 'Upload the downloadable file here',
+      description: 'Upload downloadable resource file',
+    },
+    {
+      name: 'externalDestination',
+      title: 'External Destination Link',
+      type: 'url',
+    },
+    {
+      name: 'accessTerms',
+      title: 'Access Terms',
+      type: 'string',
+      initialValue: 'Free access',
+    },
+    {
+      name: 'versionDate',
+      title: 'Version / Date',
+      type: 'string',
+    },
+    {
+      name: 'status',
+      title: 'Publication Status',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Draft', value: 'draft' },
+          { title: 'Published', value: 'published' },
+        ],
+      },
+      initialValue: 'published',
     },
   ],
   preview: {
-    select: { title: 'title', subtitle: 'fileType' }
-  }
+    select: { title: 'title', subtitle: 'resourceType' },
+  },
 }
