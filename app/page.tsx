@@ -7,10 +7,10 @@ import Logo from "@/components/Logo";
 async function getData() {
   try {
     const [books, courses, resources, articles] = await Promise.all([
-      client.fetch(`*[_type == "book" && status == "published"][0..2] { _id, title, author, shortDescription, availabilityLink, isJohansBook }`),
-      client.fetch(`*[_type == "course" && status == "published"][0..2] { _id, courseName, provider, description, providerLink }`),
-      client.fetch(`*[_type == "resource" && status == "published"][0..2] { _id, title, description, fileType, "fileUrl": file.asset->url, externalDestination }`),
-      client.fetch(`*[_type == "article" && status == "published"] | order(publishedAt desc)[0..2] { _id, title, slug, summary }`),
+      client.fetch(`*[_type == "book" && status == "published" && !(_id in path("drafts.**"))][0..2] { _id, title, author, shortDescription, availabilityLink, isJohansBook }`),
+      client.fetch(`*[_type == "course" && status == "published" && !(_id in path("drafts.**"))][0..2] { _id, courseName, provider, description, providerLink }`),
+      client.fetch(`*[_type == "resource" && status == "published" && !(_id in path("drafts.**"))][0..2] { _id, title, description, fileType, "fileUrl": file.asset->url, externalDestination }`),
+      client.fetch(`*[_type == "article" && status == "published" && !(_id in path("drafts.**"))] | order(publishedAt desc)[0..2] { _id, title, slug, summary }`),
     ])
     return {
       books: books || [],

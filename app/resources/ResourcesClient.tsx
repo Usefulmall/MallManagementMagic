@@ -46,9 +46,14 @@ export default function ResourcesClient({ resources }: { resources: any[] }) {
                       Intended use: {resource.intendedUse}
                     </p>
                   )}
-                  {resource.accessTerms && (
+                  {(resource.version || resource.publicationDate) && (
                     <p className="text-xs text-gray-400 font-mono">
-                      {resource.accessTerms}
+                      {[resource.version, resource.publicationDate].filter(Boolean).join(' • ')}
+                    </p>
+                  )}
+                  {resource.accessTerms && (
+                    <p className="text-xs text-gray-500 font-mono">
+                      Terms: {resource.accessTerms}
                     </p>
                   )}
                 </div>

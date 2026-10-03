@@ -6,9 +6,9 @@ import ResourcesClient from './ResourcesClient'
 async function getResources() {
   try {
     return await client.fetch(`
-      *[_type == "resource" && status == "published"] | order(_createdAt desc) {
-        _id, title, resourceType, description, intendedUse, fileType,
-        "fileUrl": file.asset->url, externalDestination, accessTerms, versionDate
+      *[_type == "resource" && status == "published" && !(_id in path("drafts.**"))] | order(_createdAt desc) {
+        _id, title, slug, resourceType, description, intendedUse, fileType,
+        "fileUrl": file.asset->url, externalDestination, accessTerms, version, publicationDate
       }
     `)
   } catch {
