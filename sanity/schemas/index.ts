@@ -1,5 +1,6 @@
 import article from './article'
+import book from './book'
+import course from './course'
 import resource from './resource'
-import knowledgeItem from './knowledgeItem'
 
-export const schemaTypes = [article, resource, knowledgeItem]
+export const schemaTypes = [book, course, resource, article]

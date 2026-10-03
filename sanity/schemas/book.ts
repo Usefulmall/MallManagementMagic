@@ -1,6 +1,6 @@
 export default {
-  name: 'article',
-  title: 'Article',
+  name: 'book',
+  title: 'Book',
   type: 'document',
   fields: [
     {
@@ -13,38 +13,17 @@ export default {
       name: 'author',
       title: 'Author',
       type: 'string',
-      initialValue: 'Johan Olwage',
       validation: (Rule: any) => Rule.required(),
     },
     {
       name: 'slug',
-      title: 'Slug (URL)',
+      title: 'Slug',
       type: 'slug',
       options: { source: 'title', maxLength: 96 },
-      validation: (Rule: any) => Rule.required(),
     },
     {
-      name: 'publishedAt',
-      title: 'Published Date',
-      type: 'datetime',
-      validation: (Rule: any) => Rule.required(),
-    },
-    {
-      name: 'summary',
-      title: 'Summary / Excerpt',
-      type: 'text',
-      rows: 3,
-      validation: (Rule: any) => Rule.required().max(300),
-    },
-    {
-      name: 'body',
-      title: 'Article Body',
-      type: 'array',
-      of: [{ type: 'block' }],
-    },
-    {
-      name: 'image',
-      title: 'Article Image',
+      name: 'coverImage',
+      title: 'Cover Image',
       type: 'image',
       options: { hotspot: true },
       fields: [
@@ -56,25 +35,52 @@ export default {
       ],
     },
     {
-      name: 'topics',
-      title: 'Topics / Tags',
-      type: 'array',
-      of: [{ type: 'string' }],
-    },
-    {
-      name: 'seoTitle',
-      title: 'SEO Title',
+      name: 'publisher',
+      title: 'Publisher',
       type: 'string',
     },
     {
-      name: 'seoDescription',
-      title: 'SEO Description',
+      name: 'publicationYear',
+      title: 'Publication Year',
+      type: 'string',
+    },
+    {
+      name: 'countryOrigin',
+      title: 'Country / Origin',
+      type: 'string',
+    },
+    {
+      name: 'shortDescription',
+      title: 'Short Description',
       type: 'text',
-      rows: 2,
+      rows: 3,
+      validation: (Rule: any) => Rule.required(),
+    },
+    {
+      name: 'whyItHelps',
+      title: 'Why It May Help a Manager',
+      type: 'text',
+      rows: 3,
+    },
+    {
+      name: 'availabilityLink',
+      title: 'Availability Link',
+      type: 'url',
+    },
+    {
+      name: 'category',
+      title: 'Category / Tag',
+      type: 'string',
+    },
+    {
+      name: 'isJohansBook',
+      title: "Is Johan's Book?",
+      type: 'boolean',
+      initialValue: false,
     },
     {
       name: 'status',
-      title: 'Publication Status',
+      title: 'Status',
       type: 'string',
       options: {
         list: [
