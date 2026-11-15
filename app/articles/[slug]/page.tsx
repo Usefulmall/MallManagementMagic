@@ -1,76 +1,92 @@
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
-import { client } from '@/lib/sanity'
-import { PortableText } from '@portabletext/react'
-import { ArrowLeft } from 'lucide-react'
+import { client } from "@/lib/sanity";
+import { PortableText } from "@portabletext/react";
 
 async function getArticle(slug: string) {
   try {
-    return await client.fetch(`
-      *[_type == "article" && slug.current == $slug && status == "published"][0] {
-        title, author, publishedAt, summary, body, topics
-      }
-    `, { slug })
+    return await client.fetch(
+      `*[_type == "article" && slug.current == $slug][0] { title, category, excerpt, publishedAt, body }`,
+      { slug }
+    );
   } catch {
-    return null
+    return null;
   }
 }
 
 export default async function ArticlePage({
   params,
 }: {
-  params: { slug: string }
+  params: { slug: string };
 }) {
-  const article = await getArticle(params.slug)
+  const article = await getArticle(params.slug);
 
   if (!article) {
     return (
-      <div className="text-center py-24 space-y-4">
-        <h1 className="font-serif text-2xl font-bold text-gray-800">Article not found</h1>
-        <p className="text-gray-500 text-sm">The requested article is either unavailable or has not been published.</p>
-        <a href="/articles" className="text-[#0e2145] text-sm font-semibold inline-block hover:underline">
-          ← Back to Articles
-        </a>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-navy-dark font-serif font-bold text-3xl mb-4">Article Not Found</h1>
+          <a href="/articles" className="text-gold hover:text-navy-dark font-semibold transition-colors">
+            &larr; Back to Articles
+          </a>
+        </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 py-6">
-      <a href="/articles" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#0e2145] transition-colors font-medium">
-        <ArrowLeft className="h-4 w-4" /> Back to Articles
-      </a>
-      <div className="space-y-4">
-        {article.topics && article.topics.length > 0 && (
-          <span className="inline-block bg-gray-100 text-gray-600 text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded">
-            {article.topics.join(' • ')}
-          </span>
-        )}
-        <h1 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 leading-tight">{article.title}</h1>
-        <div className="flex items-center gap-3 text-xs text-gray-500 font-mono border-b border-gray-100 pb-4">
-          <span>By {article.author || 'Johan Olwage'}</span>
-          {article.publishedAt && (
-            <>
-              <span>•</span>
-              <span>{new Date(article.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-            </>
+    <div className="min-h-screen bg-white">
+      {/* Article Header */}
+      <section className="bg-navy-dark py-16 px-6 md:px-12 lg:px-20">
+        <div className="max-w-[800px] mx-auto">
+          {article.category && (
+            <span className="bg-gold/20 text-gold rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider inline-block mb-4">
+              {article.category}
+            </span>
+          )}
+          <h1 className="text-white font-bold text-3xl md:text-4xl font-serif leading-snug mb-4">
+            {article.title}
+          </h1>
+          {article.excerpt && (
+            <p className="text-white/60 text-lg leading-relaxed">{article.excerpt}</p>
           )}
         </div>
-      </div>
+      </section>
 
-      {article.summary && (
-        <p className="text-lg text-gray-700 font-medium leading-relaxed italic bg-gray-50 p-4 rounded-lg border-l-4 border-[#0e2145]">
-          {article.summary}
-        </p>
-      )}
+      {/* Article Body */}
+      <section className="py-16 px-6 md:px-12 lg:px-20">
+        <div className="max-w-[800px] mx-auto">
+          {article.body ? (
+            <div className="prose prose-lg max-w-none text-mid-grey leading-relaxed">
+              <PortableText value={article.body} />
+            </div>
+          ) : (
+            <p className="text-mid-grey">Content coming soon.</p>
+          )}
 
-      <div className="prose prose-gray prose-lg max-w-none prose-headings:font-serif prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed">
-        {article.body ? (
-          <PortableText value={article.body} />
-        ) : (
-          <p className="text-gray-500 italic">Article body is empty.</p>
-        )}
-      </div>
+          {/* CTA */}
+          <div className="mt-16 p-8 bg-light-grey rounded-lg border border-border-grey text-center">
+            <h3 className="text-navy-dark font-serif font-bold text-xl mb-3">
+              Explore Free Resources
+            </h3>
+            <p className="text-mid-grey text-sm mb-6">
+              Download practical templates, checklists and documents for shopping centre professionals.
+            </p>
+            <a
+              href="/resources"
+              className="bg-gold hover:bg-gold/90 text-navy-dark font-bold px-6 py-3 rounded-lg transition-colors uppercase tracking-wider text-sm inline-block"
+            >
+              Browse Resources
+            </a>
+          </div>
+
+          <div className="mt-8 text-center">
+            <a href="/articles" className="text-gold hover:text-navy-dark font-semibold text-sm transition-colors">
+              &larr; Back to All Articles
+            </a>
+          </div>
+        </div>
+      </section>
     </div>
-  )
+  );
 }

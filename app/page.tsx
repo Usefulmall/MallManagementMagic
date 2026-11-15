@@ -1,170 +1,323 @@
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
-import { BookOpen, GraduationCap, Download, FileText, ArrowRight } from "lucide-react";
 import { client } from "@/lib/sanity";
-import Logo from "@/components/Logo";
 
-async function getData() {
+async function getArticles() {
   try {
-    const [books, courses, resources, articles] = await Promise.all([
-      client.fetch(`*[_type == "book" && status == "published" && !(_id in path("drafts.**"))][0..2] { _id, title, author, shortDescription, availabilityLink, isJohansBook }`),
-      client.fetch(`*[_type == "course" && status == "published" && !(_id in path("drafts.**"))][0..2] { _id, courseName, provider, description, providerLink }`),
-      client.fetch(`*[_type == "resource" && status == "published" && !(_id in path("drafts.**"))][0..2] { _id, title, description, fileType, "fileUrl": file.asset->url, externalDestination }`),
-      client.fetch(`*[_type == "article" && status == "published" && !(_id in path("drafts.**"))] | order(publishedAt desc)[0..2] { _id, title, slug, summary }`),
-    ])
-    return {
-      books: books || [],
-      courses: courses || [],
-      resources: resources || [],
-      articles: articles || []
-    }
+    return await client.fetch(
+      `*[_type == "article"] | order(publishedAt desc)[0...3] { title, slug, category, excerpt }`
+    );
   } catch {
-    return { books: [], courses: [], resources: [], articles: [] }
+    return [];
+  }
+}
+
+async function getResources() {
+  try {
+    return await client.fetch(
+      `*[_type == "resource"][0...3] { title, description, category, fileType }`
+    );
+  } catch {
+    return [];
   }
 }
 
 export default async function Home() {
-  const { books, courses, resources, articles } = await getData()
+  const [articles, resources] = await Promise.all([getArticles(), getResources()]);
+
+  const displayArticles =
+    articles.length > 0
+      ? articles
+      : [
+          {
+            title: "Understanding Net Operating Income in Shopping Centres",
+            slug: { current: "#" },
+            category: "Financial Management",
+            excerpt:
+              "NOI is the single most important metric in shopping centre management. Here is how to protect and grow it.",
+          },
+          {
+            title: "The Essentials of Tenant Mix Strategy",
+            slug: { current: "#" },
+            category: "Leasing",
+            excerpt:
+              "A well-planned tenant mix drives foot traffic, increases dwell time, and strengthens your rental income.",
+          },
+          {
+            title: "Daily Operations Checklist for Centre Managers",
+            slug: { current: "#" },
+            category: "Operations",
+            excerpt:
+              "The disciplines that separate high-performing centres from average ones begin with consistent daily routines.",
+          },
+        ];
+
+  const displayResources =
+    resources.length > 0
+      ? resources
+      : [
+          {
+            title: "Lease Application Form",
+            description:
+              "A professional template for capturing prospective tenant information and business details.",
+            category: "Legal",
+            fileType: "DOCX",
+          },
+          {
+            title: "Shopping Centre Marketing Plan Template",
+            description:
+              "A structured annual marketing plan framework adapted for shopping centre environments.",
+            category: "Marketing",
+            fileType: "DOCX",
+          },
+          {
+            title: "Tenant Criteria Document",
+            description:
+              "Define your centre's ideal tenant profile and leasing standards in this ready-to-use template.",
+            category: "Leasing",
+            fileType: "PDF",
+          },
+        ];
 
   return (
-    <div className="space-y-12 py-6">
-
+    <div className="flex flex-col min-h-screen bg-white">
       {/* HERO */}
-      <section className="rounded-xl bg-[#0e2145] text-white p-8 sm:p-12 border border-blue-950">
-        <div className="max-w-3xl space-y-6">
-          <div className="w-48 mb-2">
-            <Logo variant="full" />
+      <section className="bg-navy-dark py-24 md:py-32 px-6 md:px-12 lg:px-20 text-center">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="mb-6">
+            <span className="text-gold font-semibold text-xs uppercase tracking-widest">
+              Professional Knowledge Platform
+            </span>
           </div>
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
+          <h1 className="text-white font-bold text-4xl md:text-5xl lg:text-6xl font-serif tracking-tight mb-6 max-w-[900px] mx-auto leading-tight">
             Where Shopping Centre Managers Learn the Real Job
           </h1>
-          <p className="text-gray-200 text-base sm:text-lg leading-relaxed">
-            Managing a shopping centre is a complex job, but few managers are formally taught how to do it. UsefulMall brings together practical books, courses, free resources and articles to help Shopping Centre Managers learn the real job.
+          <p className="text-white/70 text-lg md:text-xl max-w-[600px] mx-auto mb-10 leading-relaxed">
+            Practical knowledge, free resources, and professional guidance — built for the people who run shopping centres.
           </p>
-          <div className="flex flex-wrap gap-3 pt-2">
-            <a href="/books" className="inline-flex items-center justify-center gap-2 bg-[#F0BE35] hover:bg-[#d9a82e] text-[#0e2145] font-bold rounded-lg px-5 py-2.5 text-sm transition-colors">
-              <BookOpen className="h-4 w-4" /> Explore Books
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
+            <a
+              href="/articles"
+              className="w-full sm:w-auto bg-gold hover:bg-gold/90 text-navy-dark font-bold rounded-lg px-8 py-3 transition-colors uppercase tracking-wider text-sm shadow-sm"
+            >
+              Read Articles
             </a>
-            <a href="/courses" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">
-              <GraduationCap className="h-4 w-4" /> Find Courses
-            </a>
-            <a href="/resources" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">
-              <Download className="h-4 w-4" /> Free Resources
-            </a>
-            <a href="/articles" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">
-              <FileText className="h-4 w-4" /> Read Articles
+            <a
+              href="/resources"
+              className="w-full sm:w-auto border-2 border-white/40 hover:border-gold text-white hover:text-gold font-semibold rounded-lg px-8 py-3 transition-colors uppercase tracking-wider text-sm"
+            >
+              Browse Resources
             </a>
           </div>
+          <a href="/the-book" className="text-gold/80 hover:text-gold font-medium text-sm transition-colors">
+            Learn about the book &rarr;
+          </a>
         </div>
       </section>
 
-      {/* FOUR ENTRY POINTS */}
-      <section className="space-y-6">
-        <div className="border-b border-gray-200 pb-4">
-          <h2 className="font-serif text-2xl font-bold text-gray-900">Explore Content Pillars</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-          {/* Books Pillar */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col justify-between space-y-4">
-            <div>
-              <div className="p-2.5 bg-blue-50 text-[#0e2145] rounded-lg w-fit mb-3">
-                <BookOpen className="h-6 w-6" />
-              </div>
-              <h3 className="font-serif font-bold text-gray-900 text-lg mb-2">Books</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Books and publications that can help Shopping Centre Managers understand and develop their profession.
-              </p>
-            </div>
-            <a href="/books" className="inline-flex items-center gap-1 text-[#0e2145] font-semibold text-sm hover:underline pt-2">
-              Browse Books <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
-
-          {/* Courses Pillar */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col justify-between space-y-4">
-            <div>
-              <div className="p-2.5 bg-blue-50 text-[#0e2145] rounded-lg w-fit mb-3">
-                <GraduationCap className="h-6 w-6" />
-              </div>
-              <h3 className="font-serif font-bold text-gray-900 text-lg mb-2">Courses</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Courses and learning opportunities relevant to shopping centre management, from online learning to formal education and professional development.
-              </p>
-            </div>
-            <a href="/courses" className="inline-flex items-center gap-1 text-[#0e2145] font-semibold text-sm hover:underline pt-2">
-              Browse Courses <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
-
-          {/* Free Resources Pillar */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col justify-between space-y-4">
-            <div>
-              <div className="p-2.5 bg-blue-50 text-[#0e2145] rounded-lg w-fit mb-3">
-                <Download className="h-6 w-6" />
-              </div>
-              <h3 className="font-serif font-bold text-gray-900 text-lg mb-2">Free Resources</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Practical resources made available to Shopping Centre Managers without charge.
-              </p>
-            </div>
-            <a href="/resources" className="inline-flex items-center gap-1 text-[#0e2145] font-semibold text-sm hover:underline pt-2">
-              Browse Free Resources <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
-
-          {/* Articles Pillar */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col justify-between space-y-4">
-            <div>
-              <div className="p-2.5 bg-blue-50 text-[#0e2145] rounded-lg w-fit mb-3">
-                <FileText className="h-6 w-6" />
-              </div>
-              <h3 className="font-serif font-bold text-gray-900 text-lg mb-2">Articles</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Practical thinking, experience and ideas about managing shopping centres.
-              </p>
-            </div>
-            <a href="/articles" className="inline-flex items-center gap-1 text-[#0e2145] font-semibold text-sm hover:underline pt-2">
-              Read Articles <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
-
+      {/* NARRATIVE STRIP */}
+      <section className="bg-light-grey border-y border-border-grey py-12 px-6 md:px-12 lg:px-20">
+        <div className="max-w-[1200px] mx-auto text-center">
+          <p className="text-mid-grey text-lg leading-relaxed max-w-[800px] mx-auto">
+            UsefulMall is built by a shopping centre professional for shopping centre professionals.
+            Everything here is designed to answer one question:{" "}
+            <em className="text-navy font-medium">
+              how does this help a manager perform their job better?
+            </em>
+          </p>
         </div>
       </section>
 
-      {/* FEATURED MATERIAL (ONLY WHEN PUBLISHED RECORDS EXIST) */}
-      {(books.length > 0 || courses.length > 0 || resources.length > 0 || articles.length > 0) && (
-        <section className="space-y-6 pt-4 border-t border-gray-200">
-          <div className="flex items-center justify-between">
-            <h2 className="font-serif text-2xl font-bold text-gray-900">Featured Publications & Resources</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {articles.map((art: any) => (
-              <a key={art._id} href={`/articles/${art.slug?.current}`} className="bg-white p-6 rounded-xl border border-gray-200 hover:border-gray-300 transition-colors block">
-                <span className="text-xs font-mono font-semibold text-gray-500 uppercase tracking-wider block mb-2">Article</span>
-                <h3 className="font-serif font-bold text-gray-900 text-lg mb-2">{art.title}</h3>
-                <p className="text-gray-600 text-sm line-clamp-3">{art.summary}</p>
-              </a>
-            ))}
-            {books.map((bk: any) => (
-              <div key={bk._id} className="bg-white p-6 rounded-xl border border-gray-200 flex flex-col justify-between">
-                <div>
-                  <span className="text-xs font-mono font-semibold text-gray-500 uppercase tracking-wider block mb-2">Book</span>
-                  <h3 className="font-serif font-bold text-gray-900 text-lg mb-1">{bk.title}</h3>
-                  <p className="text-xs text-gray-500 font-medium mb-3">By {bk.author}</p>
-                  <p className="text-gray-600 text-sm">{bk.shortDescription}</p>
+      {/* FEATURED ARTICLES */}
+      <section className="py-20 px-6 md:px-12 lg:px-20 max-w-[1200px] mx-auto w-full">
+        <div className="text-center mb-12">
+          <h2 className="text-navy-dark font-bold text-3xl font-serif mb-3">Latest Articles</h2>
+          <div className="h-1 w-16 bg-gold mx-auto rounded-full"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          {displayArticles.map((article: { title: string; slug: { current: string }; category: string; excerpt: string }, i: number) => (
+            <div
+              key={i}
+              className="bg-light-grey rounded-lg p-6 shadow-sm border border-border-grey flex flex-col justify-between hover:shadow-md transition-shadow"
+            >
+              <div>
+                <div className="mb-4">
+                  <span className="bg-gold/10 text-gold rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider">
+                    {article.category || "General"}
+                  </span>
                 </div>
-                {bk.availabilityLink && (
-                  <a href={bk.availabilityLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center text-sm font-semibold text-[#0e2145] hover:underline">
-                    View Details & Purchasing <ArrowRight className="h-3.5 w-3.5 ml-1" />
-                  </a>
-                )}
+                <h3 className="text-navy-dark font-bold text-lg font-serif mb-3 leading-snug">
+                  {article.title}
+                </h3>
+                <p className="text-mid-grey text-sm mb-6 leading-relaxed">
+                  {article.excerpt || "Read more about this topic in our articles section."}
+                </p>
+              </div>
+              <a
+                href={`/articles/${article.slug?.current || ""}`}
+                className="text-gold hover:text-navy-dark font-semibold text-sm transition-colors"
+              >
+                Read more &rarr;
+              </a>
+            </div>
+          ))}
+        </div>
+        <div className="text-center">
+          <a
+            href="/articles"
+            className="inline-block border-2 border-navy text-navy hover:bg-navy hover:text-white font-semibold px-8 py-3 rounded-lg transition-colors uppercase tracking-wider text-sm"
+          >
+            View All Articles
+          </a>
+        </div>
+      </section>
+
+      {/* FREE RESOURCES */}
+      <section className="py-20 px-6 md:px-12 lg:px-20 bg-light-grey border-y border-border-grey w-full">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-navy-dark font-bold text-3xl font-serif mb-3">Free Resources</h2>
+            <div className="h-1 w-16 bg-gold mx-auto rounded-full"></div>
+            <p className="text-mid-grey mt-4 text-sm">
+              Practical templates and documents you can use immediately.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {displayResources.map((resource: { title: string; description: string; category: string; fileType: string }, i: number) => (
+              <div
+                key={i}
+                className="bg-white rounded-lg p-6 shadow-sm border border-border-grey flex flex-col justify-between hover:shadow-md transition-shadow"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs text-mid-grey uppercase font-bold tracking-wider">
+                      {resource.category || "Template"}
+                    </span>
+                    <span
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border ${
+                        resource.fileType === "PDF"
+                          ? "bg-red-50 text-red-600 border-red-200"
+                          : resource.fileType === "XLSX"
+                          ? "bg-green-50 text-green-700 border-green-200"
+                          : "bg-blue-50 text-blue-700 border-blue-200"
+                      }`}
+                    >
+                      {resource.fileType || "DOCX"}
+                    </span>
+                  </div>
+                  <h3 className="text-navy-dark font-bold text-lg font-serif mb-3 leading-snug">
+                    {resource.title}
+                  </h3>
+                  <p className="text-mid-grey text-sm mb-6 leading-relaxed">
+                    {resource.description || "A professional resource for shopping centre managers."}
+                  </p>
+                </div>
+                <a
+                  href="/resources"
+                  className="w-full text-center border border-navy text-navy hover:bg-navy hover:text-white font-semibold py-2.5 rounded-md transition-colors text-sm uppercase tracking-wider"
+                >
+                  Download
+                </a>
               </div>
             ))}
           </div>
-        </section>
-      )}
+          <div className="text-center">
+            <a
+              href="/resources"
+              className="inline-block border-2 border-navy text-navy hover:bg-navy hover:text-white font-semibold px-8 py-3 rounded-lg transition-colors uppercase tracking-wider text-sm"
+            >
+              Browse All Resources
+            </a>
+          </div>
+        </div>
+      </section>
 
+      {/* BOOK HIGHLIGHT */}
+      <section className="py-20 px-6 md:px-12 lg:px-20 max-w-[1200px] mx-auto w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className="space-y-6">
+            <span className="text-gold uppercase font-bold tracking-widest text-xs">The Book</span>
+            <h2 className="text-navy-dark font-bold text-3xl md:text-4xl font-serif leading-tight">
+              The Practical Guide to Shopping Centre Management
+            </h2>
+            <p className="text-mid-grey leading-relaxed">
+              Written by veteran shopping centre professional Johan Olwage. Over 30 years of operational,
+              financial, and strategic leasing expertise consolidated into an actionable, textbook-style playbook.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <a
+                href="/the-book"
+                className="bg-navy-dark hover:bg-navy text-white font-semibold text-center rounded-lg px-6 py-3 transition-colors uppercase tracking-wider text-sm shadow-sm"
+              >
+                Learn More
+              </a>
+              <a
+                href="/the-book"
+                className="border-2 border-gold text-gold hover:bg-gold hover:text-navy-dark font-semibold text-center rounded-lg px-6 py-3 transition-colors uppercase tracking-wider text-sm"
+              >
+                Where to Buy
+              </a>
+            </div>
+          </div>
+          <div className="flex justify-center md:justify-end">
+            <div className="w-full max-w-xs aspect-[3/4] bg-navy-dark rounded-lg shadow-xl flex items-center justify-center p-8 border border-gold/20">
+              <div className="text-center">
+                <div className="w-12 h-1 bg-gold mx-auto mb-4 rounded-full"></div>
+                <span className="block text-white font-serif font-bold text-xl mb-2 leading-snug">
+                  The Practical Guide to Shopping Centre Management
+                </span>
+                <div className="w-8 h-1 bg-gold/40 mx-auto mt-4 rounded-full"></div>
+                <span className="block text-gold/70 text-xs mt-3 uppercase tracking-widest">Johan Olwage</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="py-20 px-6 md:px-12 lg:px-20 bg-light-grey border-t border-border-grey w-full">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-navy-dark font-bold text-3xl font-serif mb-3">What Professionals Say</h2>
+            <div className="h-1 w-16 bg-gold mx-auto rounded-full"></div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                quote:
+                  "Johan Olwage has consolidated 30 years of complex operational procedures and leasing rules into an absolute masterclass textbook guide.",
+                name: "Michael du Toit",
+                role: "Asset Manager, Retail Trust",
+              },
+              {
+                quote:
+                  "The HVAC audit guides and the tenant fit-out guidelines have saved our engineering and operations team hundreds of hours in compliance.",
+                name: "Sarah Jenkins",
+                role: "Regional Developer",
+              },
+              {
+                quote:
+                  "A refreshing and incredibly visual handbook that gets straight to the point of what it takes to protect shopping centre net operating income.",
+                name: "Robert Naidoo",
+                role: "Centre General Manager",
+              },
+            ].map((t, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-lg p-6 shadow-sm border border-border-grey flex flex-col justify-between"
+              >
+                <p className="text-mid-grey italic text-sm mb-6 leading-relaxed">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+                <div>
+                  <span className="block font-bold text-navy-dark text-sm">{t.name}</span>
+                  <span className="block text-xs text-mid-grey">{t.role}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
-  )
+  );
 }
