@@ -1,26 +1,46 @@
-export const dynamic = 'force-dynamic'
-
-import { client } from '@/lib/sanity'
 import { BookOpen, ExternalLink } from 'lucide-react'
+import { books, type Book } from '@/lib/books'
 
-async function getBooks() {
-  try {
-    return await client.fetch(`
-      *[_type == "book" && status == "published"] | order(isJohansBook desc, _createdAt desc) {
-        _id, title, author, publisher, publicationYear, countryOrigin, shortDescription, whyItHelps, availabilityLink, category, isJohansBook,
-        "coverUrl": coverImage.asset->url
-      }
-    `)
-  } catch {
-    return []
-  }
+export const metadata = {
+  title: 'Books & Publications | UsefulMall',
+  description:
+    'Books and publications that can help Shopping Centre Managers understand and develop their profession.',
 }
 
-export default async function BooksPage() {
-  const books = await getBooks()
+function Cover({ book, className = '' }: { book: Book; className?: string }) {
+  if (!book.cover) {
+    return (
+      <div
+        className={`flex flex-col items-center justify-center bg-gray-100 border border-gray-200 text-gray-400 ${className}`}
+        aria-label={book.coverAlt}
+      >
+        <BookOpen className="h-8 w-8 stroke-1 mb-2" />
+        <span className="text-[11px] font-mono uppercase tracking-wider">Cover coming soon</span>
+      </div>
+    )
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={book.cover}
+      alt={book.coverAlt}
+      className={`object-contain bg-gray-50 border border-gray-200 shadow-sm ${className}`}
+    />
+  )
+}
+
+function Meta({ book }: { book: Book }) {
+  const line = [book.publisher, book.year].filter(Boolean).join(' • ')
+  if (!line) return null
+  return <p className="text-xs text-gray-400 font-mono">{line}</p>
+}
+
+export default function BooksPage() {
+  const featured = books.find((b) => b.featured)
+  const others = books.filter((b) => !b.featured)
 
   return (
-    <div className="space-y-10 py-6">
+    <div className="space-y-12 py-6">
       {/* Header */}
       <div className="border-b border-gray-200 pb-8">
         <span className="text-xs font-bold font-mono text-[#0e2145] uppercase tracking-widest block mb-2">
@@ -34,61 +54,88 @@ export default async function BooksPage() {
         </p>
       </div>
 
-      {/* Books Listing */}
-      {books.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-8 sm:p-12 text-center max-w-xl mx-auto space-y-3">
-          <BookOpen className="h-10 w-10 text-gray-400 mx-auto stroke-1" />
-          <h2 className="font-serif text-lg font-bold text-gray-800">No books listed yet</h2>
-          <p className="text-gray-500 text-sm leading-relaxed">
-            We are adding resources as they are reviewed.
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {books.map((book: any) => (
-            <div key={book._id} className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col justify-between space-y-4">
-              <div className="space-y-3">
-                {book.isJohansBook && (
-                  <span className="inline-block bg-[#0e2145] text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full font-mono">
-                    Featured Publication
-                  </span>
-                )}
-                <div>
-                  <h2 className="font-serif text-xl font-bold text-gray-900 leading-snug">{book.title}</h2>
-                  <p className="text-sm font-medium text-gray-600 mt-1">By {book.author}</p>
-                </div>
-                {(book.publisher || book.publicationYear || book.countryOrigin) && (
-                  <p className="text-xs text-gray-400 font-mono">
-                    {[book.publisher, book.publicationYear, book.countryOrigin].filter(Boolean).join(' • ')}
-                  </p>
-                )}
-                <div className="pt-2 space-y-2">
-                  <p className="text-sm text-gray-700 leading-relaxed">{book.shortDescription}</p>
-                  {book.whyItHelps && (
-                    <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 mt-3">
-                      <span className="block text-xs font-semibold text-gray-900 mb-1">Why it helps a manager:</span>
-                      <p className="text-xs text-gray-600 leading-relaxed">{book.whyItHelps}</p>
-                    </div>
-                  )}
-                </div>
+      {/* Featured book */}
+      {featured && (
+        <section aria-labelledby="featured-book" className="rounded-2xl bg-[#0e2145] text-white p-6 sm:p-10">
+          <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start">
+            <Cover
+              book={featured}
+              className="w-48 sm:w-56 h-auto aspect-square rounded-lg shrink-0 !bg-white !border-white/20"
+            />
+            <div className="space-y-5 text-center md:text-left">
+              <span className="inline-block bg-[#F0BE35] text-[#0e2145] text-[11px] font-bold px-3 py-1 rounded-full font-mono uppercase tracking-wider">
+                Featured Publication
+              </span>
+              <div>
+                <h2 id="featured-book" className="font-serif text-2xl sm:text-3xl font-bold leading-snug">
+                  {featured.title}
+                </h2>
+                <p className="text-white/80 mt-2 font-medium">By {featured.author}</p>
               </div>
-
-              {book.availabilityLink && (
-                <div className="pt-4 border-t border-gray-100">
+              <p className="text-white/80 leading-relaxed max-w-2xl">{featured.description}</p>
+              <div className="flex flex-wrap gap-3 justify-center md:justify-start pt-1">
+                {featured.links.map((link, i) => (
                   <a
-                    href={book.availabilityLink}
+                    key={link.url}
+                    href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-sm font-semibold text-[#0e2145] hover:underline"
+                    className={
+                      i === 0
+                        ? 'inline-flex flex-col items-start rounded-lg bg-[#F0BE35] px-5 py-3 text-[#0e2145] font-bold hover:brightness-95 transition'
+                        : 'inline-flex flex-col items-start rounded-lg border border-white/30 px-5 py-3 text-white font-semibold hover:bg-white/10 transition'
+                    }
                   >
-                    View Listing / Purchase <ExternalLink className="h-3.5 w-3.5" />
+                    <span className="inline-flex items-center gap-2 text-sm">
+                      {link.label} <ExternalLink className="h-3.5 w-3.5" />
+                    </span>
+                    {link.market && <span className="text-[11px] opacity-70 font-normal">{link.market}</span>}
                   </a>
-                </div>
-              )}
+                ))}
+              </div>
+              <Meta book={featured} />
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* Other books */}
+      <section aria-labelledby="more-books" className="space-y-6">
+        <h2 id="more-books" className="font-serif text-2xl font-bold text-gray-900">
+          Further Reading
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {others.map((book) => (
+            <article
+              key={book.id}
+              className="bg-white rounded-xl border border-gray-200 p-5 flex gap-5"
+            >
+              <Cover book={book} className="w-24 sm:w-28 h-36 sm:h-40 rounded shrink-0" />
+              <div className="flex flex-col justify-between min-w-0 space-y-3">
+                <div className="space-y-2">
+                  <h3 className="font-serif text-lg font-bold text-gray-900 leading-snug">{book.title}</h3>
+                  <p className="text-sm font-medium text-gray-600">By {book.author}</p>
+                  <Meta book={book} />
+                  <p className="text-sm text-gray-700 leading-relaxed">{book.description}</p>
+                </div>
+                <div className="pt-2 border-t border-gray-100 flex flex-wrap gap-x-4 gap-y-1">
+                  {book.links.map((link) => (
+                    <a
+                      key={link.url}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0e2145] hover:underline"
+                    >
+                      {link.label} <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </article>
           ))}
         </div>
-      )}
+      </section>
     </div>
   )
 }
