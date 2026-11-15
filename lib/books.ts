@@ -100,9 +100,8 @@ export const books: Book[] = [
     isbn13: '9789812103918',
     description:
       'An Asian shopping-centre management guide covering location, positioning, tenant mix, leasing, opening, customer care, maintenance and promotion.',
-    // No cover yet: permission request in progress. A placeholder is shown instead.
-    cover: undefined,
-    coverAlt: 'Cover of The 4 Rs of Asian Shopping Centre Management (not yet available)',
+    cover: '/books/four-rs-asian-shopping-centre-management.png',
+    coverAlt: 'Front cover of The 4 Rs of Asian Shopping Centre Management by Keng Neo Lynda Wee and Kok Wing Tong',
     links: [{ label: 'View on Amazon', url: 'https://www.amazon.com/s?k=9789812103918&i=stripbooks' }],
   },
   {
