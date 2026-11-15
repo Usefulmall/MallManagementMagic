@@ -1,30 +1,48 @@
+import { Mail, BookOpen, GraduationCap, Download, FileText, User } from "lucide-react";
+import Logo from "./Logo";
+
 export default function Footer() {
-  const year = new Date().getFullYear();
+  const directory = [
+    { label: "Books", href: "/books", icon: BookOpen },
+    { label: "Courses", href: "/courses", icon: GraduationCap },
+    { label: "Free Resources", href: "/resources", icon: Download },
+    { label: "Articles", href: "/articles", icon: FileText },
+  ];
+
+  const info = [
+    { label: "About Johan", href: "/about", icon: User },
+    { label: "Contact", href: "/contact", icon: Mail },
+  ];
 
   return (
-    <footer className="bg-navy-dark text-white mt-auto">
-      <div className="max-w-[1200px] mx-auto px-6 md:px-12 lg:px-20 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+    <footer className="border-t border-gray-200 bg-gray-50 text-gray-600">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
+
           {/* Brand */}
-          <div className="md:col-span-1">
-            <span className="text-gold font-bold text-xl font-serif block mb-3">UsefulMall</span>
-            <p className="text-white/60 text-sm leading-relaxed">
-              The professional knowledge platform for shopping centre managers.
+          <div className="md:col-span-2 space-y-4">
+            <a href="/" className="inline-block focus:outline-none">
+              <Logo variant="header" />
+            </a>
+            <p className="text-sm text-gray-600 max-w-md leading-relaxed">
+              UsefulMall is a curated professional resource centre that helps shopping centre managers learn, understand and improve the real work of managing a shopping centre.
             </p>
           </div>
 
-          {/* Directory */}
+          {/* Navigation Directory */}
           <div>
-            <h4 className="text-gold font-semibold text-xs uppercase tracking-widest mb-4">Learn</h4>
-            <ul className="space-y-2">
-              {[
-                { name: "Articles", href: "/articles" },
-                { name: "Knowledge Hub", href: "/knowledge-hub" },
-                { name: "Free Resources", href: "/resources" },
-              ].map((link) => (
-                <li key={link.name}>
-                  <a href={link.href} className="text-white/60 hover:text-gold text-sm transition-colors">
-                    {link.name}
+            <h3 className="text-xs font-semibold tracking-wider text-gray-900 uppercase font-mono">
+              Resources
+            </h3>
+            <ul className="mt-4 space-y-2">
+              {directory.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    className="flex items-center text-sm text-gray-600 hover:text-[#0e2145] transition-colors"
+                  >
+                    <link.icon className="h-3.5 w-3.5 mr-2 text-gray-400" />
+                    {link.label}
                   </a>
                 </li>
               ))}
@@ -33,45 +51,28 @@ export default function Footer() {
 
           {/* UsefulMall */}
           <div>
-            <h4 className="text-gold font-semibold text-xs uppercase tracking-widest mb-4">UsefulMall</h4>
-            <ul className="space-y-2">
-              {[
-                { name: "The Book", href: "/the-book" },
-                { name: "About Johan", href: "/about" },
-                { name: "Contact", href: "/contact" },
-              ].map((link) => (
-                <li key={link.name}>
-                  <a href={link.href} className="text-white/60 hover:text-gold text-sm transition-colors">
-                    {link.name}
+            <h3 className="text-xs font-semibold tracking-wider text-gray-900 uppercase font-mono">
+              UsefulMall
+            </h3>
+            <ul className="mt-4 space-y-2">
+              {info.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    className="flex items-center text-sm text-gray-600 hover:text-[#0e2145] transition-colors"
+                  >
+                    <link.icon className="h-3.5 w-3.5 mr-2 text-gray-400" />
+                    {link.label}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="text-gold font-semibold text-xs uppercase tracking-widest mb-4">Connect</h4>
-            <ul className="space-y-2">
-              <li>
-                <a href="/contact" className="text-white/60 hover:text-gold text-sm transition-colors">
-                  Send a Message
-                </a>
-              </li>
-              <li>
-                <span className="text-white/40 text-sm">Langebaan, South Africa</span>
-              </li>
-            </ul>
-          </div>
         </div>
 
-        <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-white/40 text-xs">
-            Johan Olwage &copy; {year}, Langebaan, South Africa
-          </p>
-          <p className="text-white/30 text-xs text-center">
-            UsefulMall exists to help shopping centre managers learn the real job.
-          </p>
+        <div className="mt-12 border-t border-gray-200 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500 font-mono">
+          <p>Where Shopping Centre Managers Learn the Real Job</p>
+          <span>UsefulMall V1.0</span>
         </div>
       </div>
     </footer>

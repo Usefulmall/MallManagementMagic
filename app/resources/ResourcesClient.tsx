@@ -1,135 +1,88 @@
-"use client";
+'use client'
 
-import { useState } from "react";
+import { Download, ExternalLink, FileText } from 'lucide-react'
 
-type Resource = {
-  title: string;
-  slug: { current: string };
-  description: string;
-  category: string;
-  fileType: string;
-  fileUrl: string | null;
-};
-
-const CATEGORIES = ["All", "Templates", "Checklists", "Procedures", "Financial", "Marketing", "Legal", "Emergency"];
-
-export default function ResourcesClient({ resources }: { resources: Resource[] }) {
-  const [activeCategory, setActiveCategory] = useState("All");
-
-  const filtered =
-    activeCategory === "All"
-      ? resources
-      : resources.filter(
-          (r) => r.category?.toLowerCase() === activeCategory.toLowerCase()
-        );
-
-  const staticResources: Resource[] = [
-    {
-      title: "Lease Application Form",
-      slug: { current: "lease-application-form" },
-      description:
-        "A professional template for capturing prospective tenant information and business details.",
-      category: "Legal",
-      fileType: "DOCX",
-      fileUrl: null,
-    },
-    {
-      title: "Shopping Centre Marketing Plan Template",
-      slug: { current: "marketing-plan-template" },
-      description:
-        "A structured annual marketing plan framework adapted for shopping centre environments.",
-      category: "Marketing",
-      fileType: "DOCX",
-      fileUrl: null,
-    },
-    {
-      title: "Tenant Criteria Document",
-      slug: { current: "tenant-criteria-document" },
-      description:
-        "Define your centre's ideal tenant profile and leasing standards in this ready-to-use template.",
-      category: "Legal",
-      fileType: "PDF",
-      fileUrl: null,
-    },
-  ];
-
-  const displayResources = filtered.length > 0 ? filtered : staticResources;
-
+export default function ResourcesClient({ resources }: { resources: any[] }) {
   return (
-    <section className="py-16 px-6 md:px-12 lg:px-20">
-      <div className="max-w-[1200px] mx-auto">
-        {/* Category Filter */}
-        <div className="flex flex-wrap gap-2 mb-10">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider transition-colors ${
-                activeCategory === cat
-                  ? "bg-navy-dark text-white"
-                  : "bg-light-grey text-mid-grey hover:bg-navy-dark hover:text-white border border-border-grey"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+    <div className="space-y-8">
+      {resources.length === 0 ? (
+        <div className="bg-white rounded-xl border border-gray-200 p-8 sm:p-12 text-center max-w-xl mx-auto space-y-3">
+          <FileText className="h-10 w-10 text-gray-400 mx-auto stroke-1" />
+          <h2 className="font-serif text-lg font-bold text-gray-800">No free resources available yet</h2>
+          <p className="text-gray-500 text-sm leading-relaxed">
+            We are adding resources as they are reviewed.
+          </p>
         </div>
-
-        {/* Grid */}
-        {displayResources.length === 0 ? (
-          <div className="text-center py-24">
-            <p className="text-mid-grey">No resources in this category yet.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {displayResources.map((resource, i) => (
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {resources.map((resource: any) => {
+            const downloadOrDestination = resource.fileUrl || resource.externalDestination
+            return (
               <div
-                key={i}
-                className="bg-light-grey rounded-lg p-6 border border-border-grey flex flex-col hover:shadow-md transition-shadow"
+                key={resource._id}
+                className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col justify-between space-y-4"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs text-mid-grey uppercase font-bold tracking-wider">
-                    {resource.category || "Resource"}
-                  </span>
-                  <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border ${
-                      resource.fileType === "PDF"
-                        ? "bg-red-50 text-red-600 border-red-200"
-                        : resource.fileType === "XLSX"
-                        ? "bg-green-50 text-green-700 border-green-200"
-                        : "bg-blue-50 text-blue-700 border-blue-200"
-                    }`}
-                  >
-                    {resource.fileType || "DOCX"}
-                  </span>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    {resource.resourceType && (
+                      <span className="text-[11px] font-mono font-semibold uppercase text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full">
+                        {resource.resourceType}
+                      </span>
+                    )}
+                    {resource.fileType && (
+                      <span className="text-[10px] font-mono font-bold uppercase text-[#0e2145] bg-blue-50 border border-blue-100 px-2 py-0.5 rounded">
+                        {resource.fileType}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-serif font-bold text-gray-900 text-lg leading-snug">
+                    {resource.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {resource.description}
+                  </p>
+                  {resource.intendedUse && (
+                    <p className="text-xs text-gray-500 italic">
+                      Intended use: {resource.intendedUse}
+                    </p>
+                  )}
+                  {(resource.version || resource.publicationDate) && (
+                    <p className="text-xs text-gray-400 font-mono">
+                      {[resource.version, resource.publicationDate].filter(Boolean).join(' • ')}
+                    </p>
+                  )}
+                  {resource.accessTerms && (
+                    <p className="text-xs text-gray-500 font-mono">
+                      Terms: {resource.accessTerms}
+                    </p>
+                  )}
                 </div>
-                <h3 className="text-navy-dark font-bold text-lg font-serif mb-3 leading-snug flex-1">
-                  {resource.title}
-                </h3>
-                <p className="text-mid-grey text-sm mb-6 leading-relaxed">
-                  {resource.description || "A professional resource for shopping centre managers."}
-                </p>
-                {resource.fileUrl ? (
+
+                {downloadOrDestination ? (
                   <a
-                    href={resource.fileUrl}
-                    download
-                    className="w-full text-center bg-gold hover:bg-gold/90 text-navy-dark font-bold py-2.5 rounded-md transition-colors text-sm uppercase tracking-wider"
+                    href={downloadOrDestination}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full text-center inline-flex items-center justify-center gap-2 border border-[#0e2145] text-[#0e2145] hover:bg-gray-50 font-semibold py-2 rounded-lg transition-colors text-sm mt-4"
                   >
-                    Download
+                    {resource.fileUrl ? (
+                      <>
+                        <Download className="h-4 w-4" />
+                        Download Resource
+                      </>
+                    ) : (
+                      <>
+                        <ExternalLink className="h-4 w-4" />
+                        Access Resource
+                      </>
+                    )}
                   </a>
-                ) : (
-                  <button
-                    disabled
-                    className="w-full text-center border border-border-grey text-mid-grey/50 font-semibold py-2.5 rounded-md text-sm uppercase tracking-wider cursor-not-allowed"
-                  >
-                    Coming Soon
-                  </button>
-                )}
+                ) : null}
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
-  );
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
 }
