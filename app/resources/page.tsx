@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import { client } from '@/lib/sanity'
+import { freeResources } from '@/lib/resources'
 import ResourcesClient from './ResourcesClient'
 
 async function getResources() {
@@ -17,7 +18,9 @@ async function getResources() {
 }
 
 export default async function ResourcesPage() {
-  const resources = await getResources()
+  const cmsResources = await getResources()
+  // Resources kept in the site code (lib/resources.ts) are listed first, then any from Sanity.
+  const resources = [...freeResources, ...cmsResources]
 
   return (
     <div className="space-y-10 py-6">
