@@ -31,4 +31,18 @@ export const freeResources: FreeResource[] = [
     fileType: 'DOC',
     fileUrl: '/resources/tenants-introduction-manual.doc',
   },
+  {
+    _id: 'income-statement-preformulated',
+    title: 'Pre-formulated Income Statement',
+    resourceType: 'template',
+    description:
+      'A pre-formulated Excel spreadsheet built on figures extracted from the International Property Database index. Simply enter your shopping centre’s total (gross) income and the rest of the income statement is filled in for you.',
+    intendedUse:
+      'Draft a quick benchmark budget, or sense-check your own. Enter your expected gross income in the highlighted cell. The preview shows an example figure.',
+    thumbnail: '/resources/income-statement-preformulated-preview.jpg',
+    thumbnailAlt:
+      'Pre-formulated income statement spreadsheet with an example gross income entered and all income and expense lines filled in',
+    fileType: 'XLSX',
+    fileUrl: '/resources/income-statement-preformulated.xlsx',
+  },
 ]
