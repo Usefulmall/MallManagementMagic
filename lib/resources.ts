@@ -9,6 +9,8 @@ export type FreeResource = {
   description: string
   intendedUse?: string
   fileType: 'PDF' | 'DOCX' | 'DOC' | 'XLSX' | 'LINK'
+  thumbnail?: string // preview image under /public
+  thumbnailAlt?: string
   fileUrl?: string // file under /public
   externalDestination?: string // used when fileType is LINK
   version?: string
@@ -24,6 +26,8 @@ export const freeResources: FreeResource[] = [
       'This manual is ideal as an introduction for new tenants to your mall. It is available in MS Word format, so all you have to do is add your centre’s details and your own cover page.',
     intendedUse:
       'Give to every new tenant at the start of their lease. Covers 21 topics, from payments and trading hours to security and emergency planning.',
+    thumbnail: '/resources/tenants-introduction-manual-index.jpg',
+    thumbnailAlt: 'Index page of the Tenants Introduction Manual, listing its 21 sections',
     fileType: 'DOC',
     fileUrl: '/resources/tenants-introduction-manual.doc',
   },
