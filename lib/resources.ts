@@ -58,4 +58,17 @@ export const freeResources: FreeResource[] = [
     fileType: 'PDF',
     fileUrl: '/resources/marketing-plan-and-budgets.pdf',
   },
+  {
+    _id: 'house-rules',
+    title: 'House Rules',
+    resourceType: 'document',
+    description:
+      'Malls normally issue House Rules as a quick reference guide to tenants, as most of these general conduct rules are also covered in the Lease Agreement. Very few retail store managers like to read the fine print of a formal agreement, so this is a handy tool for Shopping Centre managers.',
+    intendedUse:
+      'Use as a model for your own centre’s House Rules, and adapt the wording to your lease and local by-laws.',
+    thumbnail: '/resources/house-rules-preview.jpg',
+    thumbnailAlt: 'The two pages of the House Rules document',
+    fileType: 'PDF',
+    fileUrl: '/resources/house-rules.pdf',
+  },
 ]
