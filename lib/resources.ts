@@ -45,4 +45,17 @@ export const freeResources: FreeResource[] = [
     fileType: 'XLSX',
     fileUrl: '/resources/income-statement-preformulated.xlsx',
   },
+  {
+    _id: 'marketing-plan-and-budgets',
+    title: 'Marketing Plan and Budgets',
+    resourceType: 'template',
+    description:
+      'A marketing plan and budgeting template that can be used as a training aid or as a guide for new centre managers. Centre managers can also use it to guide inexperienced marketing personnel.',
+    intendedUse:
+      'Work through it step by step to build a centre marketing budget, with a sample annual budget on the last page.',
+    thumbnail: '/resources/marketing-plan-and-budgets-preview.jpg',
+    thumbnailAlt: 'First two pages of the Marketing Plan and Budgets guide',
+    fileType: 'PDF',
+    fileUrl: '/resources/marketing-plan-and-budgets.pdf',
+  },
 ]
