@@ -78,9 +78,9 @@ export const freeResources: FreeResource[] = [
     description:
       'FM is short for Facilities Management. Well-organised Shopping Centre Managers meet with their Facilities (Operations) Managers once a week. This list is a quick reference guide and can also serve as a meeting agenda.',
     intendedUse:
-      'Covers daily, weekly and monthly walkabout checks. Available in MS Word format, so you can adapt it to your centre.',
+      'Covers daily, weekly and monthly walkabout checks, with a space for the date on each page. Available in MS Word format, so you can adapt it to your centre.',
     thumbnail: '/resources/fm-checklist-preview.jpg',
-    thumbnailAlt: 'The top of the FM Checklist, showing the daily, restroom and back-of-house checks',
+    thumbnailAlt: 'The FM Checklist, with a date line and the daily, restroom and back-of-house checks',
     fileType: 'DOCX',
     fileUrl: '/resources/fm-checklist.docx',
   },
